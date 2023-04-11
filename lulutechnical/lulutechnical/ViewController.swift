@@ -28,7 +28,7 @@ class ViewController: UIViewController {
     }()
     
     private lazy var segmentedControl: UISegmentedControl = {
-        let control = UISegmentedControl(items: ["hey", "hi"])
+        let control = UISegmentedControl(items: SortOrder.allCases.map { $0.localizedName })
         return control
     }()
     
@@ -54,14 +54,7 @@ class ViewController: UIViewController {
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        title = "hi"
-        
-        navigationItem.setRightBarButton(addButton, animated: false)
-        addSegmentedControl()
-        addTableView()
-        
+    fileprivate func setupDataSource() {
         dataSource = UITableViewDiffableDataSource(tableView: tableView, cellProvider: { tableView, indexPath, itemIdentifier in
             var cell : UITableViewCell!
             cell = tableView.dequeueReusableCell(withIdentifier: ViewController.cellIdentifier)
@@ -74,7 +67,7 @@ class ViewController: UIViewController {
             return cell
         })
         
-        viewModel.stringSubject
+        viewModel.items
             .receive(on: RunLoop.main)
             .sink(receiveCompletion: { _ in
                 print("done)")
@@ -86,11 +79,43 @@ class ViewController: UIViewController {
             }).store(in: &cancellables)
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "hi"
+        
+        navigationItem.setRightBarButton(addButton, animated: false)
+        addSegmentedControl()
+        addTableView()
+        setupDataSource()
+        viewModel.sortOrder
+            .receive(on: RunLoop.main).sink { [weak segmentedControl] order in
+                switch order {
+                case .alphabetical:
+                    segmentedControl?.selectedSegmentIndex = 0
+                case .date:
+                    segmentedControl?.selectedSegmentIndex = 1
+                }
+            }.store(in: &cancellables)
+        
+        segmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
+    }
+    
     @objc private func barButtonAction() {
         let addViewController = AddViewController()
         addViewController.setViewModel(viewModel)
         DispatchQueue.main.async { [weak navigationController] in
             navigationController?.pushViewController(addViewController, animated: true)
+        }
+    }
+
+    @objc func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            viewModel.sortOrder.send(.alphabetical)
+        case 1:
+            viewModel.sortOrder.send(.date)
+        default:
+            break;
         }
     }
 }

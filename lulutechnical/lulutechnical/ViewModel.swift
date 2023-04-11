@@ -28,31 +28,53 @@ enum ItemVerificationError: Error, LocalizedError {
     }
 }
 
+enum SortOrder: CaseIterable {
+    case alphabetical
+    case date
+    
+    var localizedName: String {
+        switch self {
+        case .alphabetical:
+            return "Alpha"
+        case .date:
+            return "Creation Time"
+        }
+    }
+}
+
 class ViewModel: ObservableObject {
     let service = DataService()
-//    @Published private(set) var items: [LuluModel] = []
-    let stringSubject = CurrentValueSubject<[LuluModel], Never>([])
-
+    private let itemSubject = CurrentValueSubject<[LuluModel], Never>([])
+    let sortOrder = CurrentValueSubject<SortOrder, Never>(.alphabetical)
     private static let minLength = 2
     private static let maxLength = 20
     
+    var items: AnyPublisher<[LuluModel], Never> {
+        Publishers
+            .CombineLatest(itemSubject, sortOrder)
+            .map { (model, order) in
+                switch order {
+                case .alphabetical:
+                    return model.sorted { (first, second) in
+                        first.title < second.title
+                    }
+                case .date:
+                    return model.sorted { (first, second) in
+                        first.date < second.date
+                    }
+                }
+            }.eraseToAnyPublisher()
+    }
+    
     init() {
         reload()
-//        Task {
-//            do {
-//                _ = try await addItem("Dress")
-//            } catch {
-//                print(error)
-//            }
-//        }
     }
     
     func reload() {
         service.getAllObjects { result in
             switch result {
             case .success(let data):
-//                items = data
-                stringSubject.send(data)
+                itemSubject.send(data)
             case .failure(let error):
                 print(error)
             }

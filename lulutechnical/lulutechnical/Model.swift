@@ -10,6 +10,7 @@ import Foundation
 class LuluModel: Codable, Hashable, ObservableObject {
     let identifier = UUID()
     let title: String
+    let date = Date()
     
     init(title: String) {
         self.title = title
