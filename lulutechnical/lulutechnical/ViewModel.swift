@@ -6,46 +6,85 @@
 //
 
 import Combine
+import Foundation
 
-enum ItemVerificationError: Error {
+enum ItemVerificationError: Error, LocalizedError {
     case tooShort
     case tooLong
     case duplicate
+    case doesntExist
+    
+    public var errorDescription: String? {
+        switch self {
+        case .tooLong:
+            return "Name too long"
+        case .tooShort:
+            return "Name too short"
+        case .duplicate:
+            return "Name already exists"
+        case .doesntExist:
+            return "Name doesn't exist"
+        }
+    }
 }
 
-class ViewModel {
-//    let service:  = MainDataService()
-    
+class ViewModel: ObservableObject {
+    let service = DataService()
+//    @Published private(set) var items: [LuluModel] = []
+    let stringSubject = CurrentValueSubject<[LuluModel], Never>([])
+
     private static let minLength = 2
     private static let maxLength = 20
-    @Published private(set) var items: [LuluModel]? = []
     
     init() {
-        Task {
-            items?.append(.init(title: "hey"))
-        }
+        reload()
 //        Task {
-//            package = (await service.loadPackage())?.map {
-//                FormattedPackageElement(package: $0)
+//            do {
+//                _ = try await addItem("Dress")
+//            } catch {
+//                print(error)
 //            }
 //        }
     }
     
-    func addItem(_ title: String) async throws -> LuluModel {
+    func reload() {
+        service.getAllObjects { result in
+            switch result {
+            case .success(let data):
+//                items = data
+                stringSubject.send(data)
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func add(_ title: String) async throws -> LuluModel {
+        let model = try await addItem(title)
+        return try await Future<LuluModel, Error>() { [weak service] promise in
+            service?.addObject(key: title, object: model, completionHandler: { [weak self] result in
+                switch result {
+                case .success():
+                    self?.reload()
+                    promise(.success(model))
+                case .failure(let error):
+                    promise(.failure(error))
+                }
+            })
+        }.value
+    }
+    
+    private func addItem(_ title: String) async throws -> LuluModel {
         let saveTask = Task { () -> LuluModel in
             if title.count < ViewModel.minLength {
                 throw ItemVerificationError.tooShort
             } else if title.count > ViewModel.maxLength {
                 throw ItemVerificationError.tooLong
-            } else if items?.contains(where: { model in
-                model.title.lowercased() == title.lowercased()
-            }) ?? false {
-                throw ItemVerificationError.duplicate
             }
             let newModel = LuluModel(title: title)
-            items?.append(newModel)
             return newModel
         }
+
         return try await saveTask.value
     }
 }

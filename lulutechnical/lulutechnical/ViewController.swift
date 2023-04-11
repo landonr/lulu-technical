@@ -74,12 +74,14 @@ class ViewController: UIViewController {
             return cell
         })
         
-        viewModel.$items
+        viewModel.stringSubject
             .receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] model in
+            .sink(receiveCompletion: { _ in
+                print("done)")
+            }, receiveValue: { [weak self] model in
                 var snapshot = NSDiffableDataSourceSnapshot<ItemSection, LuluModel>()
                 snapshot.appendSections([.main])
-                snapshot.appendItems(model ?? [])
+                snapshot.appendItems(model)
                 self?.dataSource?.apply(snapshot)
             }).store(in: &cancellables)
     }

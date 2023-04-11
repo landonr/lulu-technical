@@ -20,6 +20,7 @@
 		8FCB417229E5D97200F5A4DD /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FCB417129E5D97200F5A4DD /* ViewModel.swift */; };
 		8FCB417429E5DBBE00F5A4DD /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FCB417329E5DBBE00F5A4DD /* AddViewController.swift */; };
 		8FCB417629E5DD6D00F5A4DD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FCB417529E5DD6D00F5A4DD /* Constants.swift */; };
+		8FCB417829E60E5D00F5A4DD /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FCB417729E60E5D00F5A4DD /* DataService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		8FCB417129E5D97200F5A4DD /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		8FCB417329E5DBBE00F5A4DD /* AddViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
 		8FCB417529E5DD6D00F5A4DD /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		8FCB417729E60E5D00F5A4DD /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +112,7 @@
 				8FCB413F29E5D42900F5A4DD /* AppDelegate.swift */,
 				8FCB414129E5D42900F5A4DD /* SceneDelegate.swift */,
 				8FCB414329E5D42900F5A4DD /* ViewController.swift */,
+				8FCB417729E60E5D00F5A4DD /* DataService.swift */,
 				8FCB417329E5DBBE00F5A4DD /* AddViewController.swift */,
 				8FCB417129E5D97200F5A4DD /* ViewModel.swift */,
 				8FCB414529E5D42900F5A4DD /* Main.storyboard */,
@@ -277,6 +280,7 @@
 				8FCB417629E5DD6D00F5A4DD /* Constants.swift in Sources */,
 				8FCB414229E5D42900F5A4DD /* SceneDelegate.swift in Sources */,
 				8FCB417029E5D93B00F5A4DD /* Model.swift in Sources */,
+				8FCB417829E60E5D00F5A4DD /* DataService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

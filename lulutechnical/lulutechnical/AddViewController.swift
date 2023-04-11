@@ -67,12 +67,15 @@ class AddViewController: UIViewController {
        print("Button pressed")
         Task {
             do {
-                guard let item = try await viewModel?.addItem(textField.text ?? "") else {
+                guard let item = try await viewModel?.add(textField.text ?? "") else {
                     return
                 }
                 print("save success: \(item.title)")
                 navigationController?.popViewController(animated: true)
             } catch {
+                let alert = UIAlertController(title: "Alert", message: error.localizedDescription, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Click", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
                 print("save failed: \(error)")
             }
         }
