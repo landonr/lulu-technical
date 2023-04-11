@@ -6,8 +6,14 @@
 //
 
 import UIKit
+import Combine
 
 class ViewController: UIViewController {
+    private let viewModel = ViewModel()
+    private var tableViewCancellable: AnyCancellable?
+    private var dataSource: UITableViewDiffableDataSource<Int, LuluModel>?
+    static private let cellIdentifier = "luluItem"
+    
     lazy var addButton: UIBarButtonItem = {
         let button = UIBarButtonItem()
         button.title = "hey"
@@ -43,6 +49,27 @@ class ViewController: UIViewController {
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
     }
     
+    func setupDatasource() {
+        dataSource = UITableViewDiffableDataSource(tableView: tableView, cellProvider: { tableView, indexPath, itemIdentifier in
+            var cell : UITableViewCell!
+            cell = tableView.dequeueReusableCell(withIdentifier: ViewController.cellIdentifier)
+            if cell == nil {
+                cell = UITableViewCell(style: .default, reuseIdentifier: ViewController.cellIdentifier)
+            }
+            var content = cell.defaultContentConfiguration()
+            content.text = itemIdentifier.title
+            cell.contentConfiguration = content
+            return cell
+        })
+    
+        tableViewCancellable = viewModel.items.publisher.sink { [weak self] item in
+            var snapshot = NSDiffableDataSourceSnapshot<Int, LuluModel>()
+            snapshot.appendSections([0])
+            snapshot.appendItems(item)
+            self?.dataSource?.apply(snapshot)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "hi"
@@ -50,6 +77,7 @@ class ViewController: UIViewController {
         navigationItem.setRightBarButton(addButton, animated: false)
         addSegmentedControl()
         addTableView()
+        setupDatasource()
         // Do any additional setup after loading the view.
     }
     
