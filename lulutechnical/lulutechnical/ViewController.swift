@@ -7,14 +7,19 @@
 
 import UIKit
 import Combine
+import Foundation
 
 class ViewController: UIViewController {
+    enum ItemSection: Hashable {
+        case main
+    }
+    
     private let viewModel = ViewModel()
-    private var tableViewCancellable: AnyCancellable?
-    private var dataSource: UITableViewDiffableDataSource<Int, LuluModel>?
+    private var cancellables: Set<AnyCancellable> = []
+    private var dataSource: UITableViewDiffableDataSource<ItemSection, LuluModel>?
     static private let cellIdentifier = "luluItem"
     
-    lazy var addButton: UIBarButtonItem = {
+    private lazy var addButton: UIBarButtonItem = {
         let button = UIBarButtonItem()
         button.title = "hey"
         button.action = #selector(barButtonAction)
@@ -22,12 +27,12 @@ class ViewController: UIViewController {
         return button
     }()
     
-    lazy var segmentedControl: UISegmentedControl = {
+    private lazy var segmentedControl: UISegmentedControl = {
         let control = UISegmentedControl(items: ["hey", "hi"])
         return control
     }()
     
-    lazy var tableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let tableView = UITableView()
         return tableView
     }()
@@ -49,7 +54,14 @@ class ViewController: UIViewController {
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
     }
     
-    func setupDatasource() {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "hi"
+        
+        navigationItem.setRightBarButton(addButton, animated: false)
+        addSegmentedControl()
+        addTableView()
+        
         dataSource = UITableViewDiffableDataSource(tableView: tableView, cellProvider: { tableView, indexPath, itemIdentifier in
             var cell : UITableViewCell!
             cell = tableView.dequeueReusableCell(withIdentifier: ViewController.cellIdentifier)
@@ -61,29 +73,20 @@ class ViewController: UIViewController {
             cell.contentConfiguration = content
             return cell
         })
-    
-        tableViewCancellable = viewModel.items.publisher.sink { [weak self] item in
-            var snapshot = NSDiffableDataSourceSnapshot<Int, LuluModel>()
-            snapshot.appendSections([0])
-            snapshot.appendItems(item)
-            self?.dataSource?.apply(snapshot)
-        }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        title = "hi"
         
-        navigationItem.setRightBarButton(addButton, animated: false)
-        addSegmentedControl()
-        addTableView()
-        setupDatasource()
-        // Do any additional setup after loading the view.
+        viewModel.$items
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] model in
+                var snapshot = NSDiffableDataSourceSnapshot<ItemSection, LuluModel>()
+                snapshot.appendSections([.main])
+                snapshot.appendItems(model ?? [])
+                self?.dataSource?.apply(snapshot)
+            }).store(in: &cancellables)
     }
     
-    @objc func barButtonAction() {
-        print("Button pressed")
+    @objc private func barButtonAction() {
         let addViewController = AddViewController()
+        addViewController.setViewModel(viewModel)
         DispatchQueue.main.async { [weak navigationController] in
             navigationController?.pushViewController(addViewController, animated: true)
         }

@@ -10,7 +10,7 @@ import UIKit
 class AddViewController: UIViewController {
     private var viewModel: ViewModel?
     
-    lazy var saveButton: UIBarButtonItem = {
+    private lazy var saveButton: UIBarButtonItem = {
         let button = UIBarButtonItem()
         button.title = "shey"
         button.action = #selector(barButtonAction)
@@ -18,7 +18,7 @@ class AddViewController: UIViewController {
         return button
     }()
     
-    lazy var titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "name:?"
         label.font = .systemFont(ofSize: 24)
@@ -33,7 +33,7 @@ class AddViewController: UIViewController {
         titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
     }
     
-    lazy var textField: UITextField = {
+    private lazy var textField: UITextField = {
         let field = UITextField()
         field.placeholder = "gmnt name"
         field.borderStyle = .roundedRect
@@ -46,6 +46,10 @@ class AddViewController: UIViewController {
         textField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Constants.margin).isActive = true
         textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.margin).isActive = true
         textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+    }
+    
+    func setViewModel(_ viewModel: ViewModel) {
+        self.viewModel = viewModel
     }
     
     override func viewDidLoad() {
@@ -61,5 +65,16 @@ class AddViewController: UIViewController {
     
     @objc func barButtonAction() {
        print("Button pressed")
+        Task {
+            do {
+                guard let item = try await viewModel?.addItem(textField.text ?? "") else {
+                    return
+                }
+                print("save success: \(item.title)")
+                navigationController?.popViewController(animated: true)
+            } catch {
+                print("save failed: \(error)")
+            }
+        }
     }
 }
