@@ -82,6 +82,10 @@ class ViewController: UIViewController {
     }
     
     @objc func barButtonAction() {
-       print("Button pressed")
+        print("Button pressed")
+        let addViewController = AddViewController()
+        DispatchQueue.main.async { [weak navigationController] in
+            navigationController?.pushViewController(addViewController, animated: true)
+        }
     }
 }
