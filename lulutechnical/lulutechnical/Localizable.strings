@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  lulutechnical
+
+  Created by Landon Rohatensky on 2023-04-11.
+  
+*/
+
+"list" = "List";
+"alpha" = "Alpha";
+"creationTime" = "Creation Time";
+"add" = "Add";
+"gname" = "Garment Name:";

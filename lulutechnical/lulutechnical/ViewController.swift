@@ -20,10 +20,7 @@ class ViewController: UIViewController {
     static private let cellIdentifier = "luluItem"
     
     private lazy var addButton: UIBarButtonItem = {
-        let button = UIBarButtonItem()
-        button.title = "hey"
-        button.action = #selector(barButtonAction)
-        button.target = self
+        let button = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(barButtonAction))
         return button
     }()
     
@@ -81,7 +78,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "hi"
+        title = NSLocalizedString("list", comment: "")
         
         navigationItem.setRightBarButton(addButton, animated: false)
         addSegmentedControl()

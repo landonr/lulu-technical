@@ -35,9 +35,9 @@ enum SortOrder: CaseIterable {
     var localizedName: String {
         switch self {
         case .alphabetical:
-            return "Alpha"
+            return NSLocalizedString("alpha", comment: "")
         case .date:
-            return "Creation Time"
+            return NSLocalizedString("creationTime", comment: "")
         }
     }
 }

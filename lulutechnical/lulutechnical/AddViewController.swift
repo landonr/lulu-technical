@@ -12,7 +12,7 @@ class AddViewController: UIViewController {
     
     private lazy var saveButton: UIBarButtonItem = {
         let button = UIBarButtonItem()
-        button.title = "shey"
+        button.title = NSLocalizedString("add", comment: "")
         button.action = #selector(barButtonAction)
         button.target = self
         return button
@@ -20,7 +20,7 @@ class AddViewController: UIViewController {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "name:?"
+        label.text = NSLocalizedString("gname", comment: "")
         label.font = .systemFont(ofSize: 24)
         return label
     }()
@@ -35,7 +35,7 @@ class AddViewController: UIViewController {
     
     private lazy var textField: UITextField = {
         let field = UITextField()
-        field.placeholder = "gmnt name"
+        field.placeholder = NSLocalizedString("gname", comment: "")
         field.borderStyle = .roundedRect
         return field
     }()
@@ -54,7 +54,7 @@ class AddViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "hiAdd"
+        title = NSLocalizedString("add", comment: "")
         
         navigationItem.setRightBarButton(saveButton, animated: false)
         view.backgroundColor = .white
@@ -64,7 +64,6 @@ class AddViewController: UIViewController {
     }
     
     @objc func barButtonAction() {
-       print("Button pressed")
         Task {
             do {
                 guard let item = try await viewModel?.add(textField.text ?? "") else {
